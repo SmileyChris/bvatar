@@ -149,7 +149,7 @@ def main():
 
     Usage:
         bvatar [--mirror] [--no-color] [--px-size=<int>] ([TEXT] | [--hash=<sha1_hash>])
-        bvatar [--mirror] [--ascii] [--spaced] [--no-border] ([TEXT] | [--hash=<sha1_hash>])
+        bvatar --ascii [--mirror] [--spaced] [--no-border] ([TEXT] | [--hash=<sha1_hash>])
 
     Arguments:
         TEXT  bvatar source text (otherwise a random bvatar is generated)

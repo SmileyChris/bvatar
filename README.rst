@@ -8,13 +8,27 @@ Bvatar creates a unique 8x8 graphical representation of a string.
 Setup
 =====
 
-Install this project with the following pip command::
+Install from PYPI
+-----------------
 
-    pip install -e https://github.com/smileychris/bvatar
+Install with the following pip command::
 
-If you want to be able to create bitmap images, you'll need pillow installed::
+    pip install bvatar
 
-    pip install pillow
+If you want to be able to create bitmap images, use this as the final
+installation command instead::
+
+    pip install bvatar[bitmap]
+
+
+Install development version
+---------------------------
+
+Download from github and install the development version with these commands::
+
+    git clone https://github.com/smileychris/bvatar
+    cd bvatar
+    pip install -e .[bitmap]
 
 
 Usage
@@ -36,7 +50,7 @@ Generate a Bvatar (an 8x8 randomart avatar).
 Usage::
 
     bvatar [--mirror] [--no-color] [--px-size=<int>] ([TEXT] | [--hash=<sha1_hash>])
-    bvatar [--mirror] [--ascii] [--spaced] [--no-border] ([TEXT] | [--hash=<sha1_hash>])
+    bvatar --ascii [--mirror] [--spaced] [--no-border] ([TEXT] | [--hash=<sha1_hash>])
 
 The first format is for generating bitmap images. By default, the image is
 only displayed and not stored. To save the image, pipe to a file::
