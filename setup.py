@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='bvatar',
-    version='1.a1',
+    version='1.0.a1',
     url='https://github.com/smileychris/bvatar',
     #download_url='',
     description='Random-art avatar generation',
