@@ -167,7 +167,7 @@ def main():
     from docopt import docopt
     arguments = docopt(main.__doc__)
 
-    source = arguments['TEXT'] or arguments['--hash'] or unicode(uuid.uuid4())
+    source = arguments['TEXT'] or arguments['--hash'] or uuid.uuid4().bytes
     bvatar = Bvatar(source, mirror=arguments['--mirror'])
 
     use_ascii = arguments['--ascii']
