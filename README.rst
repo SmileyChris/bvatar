@@ -15,8 +15,7 @@ Install with the following pip command::
 
     pip install bvatar
 
-If you want to be able to create bitmap images, use this as the final
-installation command instead::
+Or if you want to be able to create bitmap images, use this instead::
 
     pip install bvatar[bitmap]
 

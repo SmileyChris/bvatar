@@ -12,7 +12,7 @@ setup(
     author='Chris Beaven',
     author_email='smileychris@gmail.com',
     platforms=['any'],
-    packages=find_packages(),
+    scripts=['bvatar.py'],
     entry_points={
         'console_scripts': [
             'bvatar = bvatar:main',
