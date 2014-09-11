@@ -169,7 +169,17 @@ def main():
 
     source = arguments['TEXT'] or arguments['--hash'] or unicode(uuid.uuid4())
     bvatar = Bvatar(source, mirror=arguments['--mirror'])
-    if arguments.get('--ascii'):
+
+    use_ascii = arguments['--ascii']
+    if not use_ascii and sys.stdout.isatty():
+        try:
+            from PIL import Image
+        except ImportError:
+            import warnings
+            warnings.warn('PIL is not installed, falling back to ASCII')
+            use_ascii = True
+
+    if use_ascii:
         bvatar.ascii(
             spaced=arguments['--spaced'], border=not arguments['--no-border'])
     else:
