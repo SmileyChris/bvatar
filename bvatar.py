@@ -117,8 +117,8 @@ class Bvatar(object):
 
         if color:
             color_bits = self._get_color_bits()
-            hue = int(color_bits[:4].to01(), 2) / 16.0
-            sat = int(color_bits[4:6].to01(), 2) / 4.0 * 0.5 + 0.2
+            hue = int(color_bits[:8].to01(), 2) / 256.0
+            sat = int(color_bits[8:12].to01(), 2) / 16.0 * 0.5 + 0.2
             max_lightness = 0.75
         else:
             hue = 1
