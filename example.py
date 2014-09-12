@@ -21,7 +21,8 @@ def main():
     arguments = docopt(main.__doc__)
 
     multiplier = int(arguments['--multiplier'])
-    side_length = 2 ** int(arguments['--bits'])
+    bits = int(arguments['--bits'])
+    side_length = 2 ** bits
     border = int(multiplier * 1.5)
     offset = border + side_length*multiplier
 
@@ -35,7 +36,7 @@ def main():
             name = letter+number
             bvtr = Bvatar(
                 name, king=not arguments['--no-king'],
-                mirror=arguments['--mirror'])
+                mirror=arguments['--mirror'], bits=bits)
             grid.paste(
                 bvtr.image(pxsize=multiplier),
                 (x*offset + border, y*offset + border)

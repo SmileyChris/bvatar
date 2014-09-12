@@ -9,16 +9,16 @@ from bitarray import bitarray
 
 
 class Bvatar(object):
-    #: Number of bits per side (default is 3, so an 8x8 bvatar)
-    size = 0x3
 
-    def __init__(self, source, mirror=False, is_hash=False, king=True):
+    def __init__(self, source, mirror=False, is_hash=False, king=True, bits=3):
         if is_hash:
             self.bytes = base64.b16decode(source)
         else:
             self.bytes = hashlib.sha1(source).digest()
         self.mirror = mirror
         self.king = king
+        #: Number of bits per side (default is 3, so an 8x8 bvatar)
+        self.size = bits
         self.walk()
 
     def _get_start_pos(self, bits):
