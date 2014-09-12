@@ -9,12 +9,13 @@ from bitarray import bitarray
 
 class Bvatar(object):
 
-    def __init__(self, source, mirror=False, is_hash=False):
+    def __init__(self, source, mirror=False, is_hash=False, king=True):
         if is_hash:
             self.bytes = base64.b16decode(source)
         else:
             self.bytes = hashlib.sha1(source).digest()
         self.mirror = mirror
+        self.king = king
         self.walk()
 
     def walk(self):
@@ -44,23 +45,35 @@ class Bvatar(object):
         # First bits are the position, the rest are the steps.
         pos_bits = 5 if self.mirror else 6
         pos, steps = int(steps[:pos_bits].to01(), 2), steps[pos_bits:]
+        if self.king:
+            king_tendancy = steps.copy()
+            king_tendancy.reverse()
 
         # Mark the starting position.
         self.atrium[pos] += 1
+        do_x, do_y = True, True
         while True:
             try:
                 x, y = steps.pop(), steps.pop()
+                if self.king:
+                    if king_tendancy.pop() and do_x and do_y:
+                        do_y = king_tendancy.pop()
+                        do_x = not do_y
+                    else:
+                        do_x, do_y = True, True
             except IndexError:
-                # No more steps to consume.
+            # No more steps to consume.
                 break
-            if x:
-                pos += 8 if pos < atrium_size-8 else 0
-            else:
-                pos -= 8 if pos >= 8 else 0
-            if y:
-                pos += (1 if (pos+1) % 8 else 0)
-            else:
-                pos -= (1 if pos % 8 else 0)
+            if do_x or not do_y:
+                if x:
+                    pos += 8 if pos < atrium_size-8 else 0
+                else:
+                    pos -= 8 if pos >= 8 else 0
+            if do_y or not do_x:
+                if y:
+                    pos += (1 if (pos+1) % 8 else 0)
+                else:
+                    pos -= (1 if pos % 8 else 0)
             # Leave a coin.
             self.atrium[pos] += 1
 
