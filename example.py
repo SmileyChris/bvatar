@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from bvatar import Bvatar
 
 letters, numbers = 'abcdef', '123456'
@@ -9,19 +9,21 @@ def main():
     """
     Generate a grid of example bvatars.
 
-    Usage: example.py [--mirror] [--no-king] [--multiplier=<num>]
+    Usage: example.py [--mirror] [--no-king] [--multiplier=<num>] [--bits=<num>]
 
     Options:
         --mirror            create mirrored avatars
         --no-king           don't use the new king algorithm
         --multiplier=<num>  Pixel multiplier [default: 8]
+        --bits=<num>        Bis per side [default: 3] (experimental)
     """
     from docopt import docopt
     arguments = docopt(main.__doc__)
 
     multiplier = int(arguments['--multiplier'])
+    side_length = 2 ** int(arguments['--bits'])
     border = int(multiplier * 1.5)
-    offset = border + 8*multiplier
+    offset = border + side_length*multiplier
 
     grid = Image.new(
         'RGB',
@@ -38,6 +40,7 @@ def main():
                 bvtr.image(pxsize=multiplier),
                 (x*offset + border, y*offset + border)
             )
+            # ImageFont.load('arial.ttf')
     grid.show()
 
 

@@ -1,6 +1,7 @@
 import base64
 import colorsys
 import hashlib
+import itertools
 import uuid
 import sys
 
@@ -8,6 +9,8 @@ from bitarray import bitarray
 
 
 class Bvatar(object):
+    #: Number of bits per side (default is 3, so an 8x8 bvatar)
+    size = 0x3
 
     def __init__(self, source, mirror=False, is_hash=False, king=True):
         if is_hash:
@@ -17,6 +20,17 @@ class Bvatar(object):
         self.mirror = mirror
         self.king = king
         self.walk()
+
+    def _get_start_pos(self, bits):
+        pos_bits = self.size * 2
+        if self.mirror:
+            pos_bits -= 1
+
+        pos = 0
+        for _ in range(pos_bits):
+            pos <<= 1
+            pos += bits.next()
+        return pos
 
     def walk(self):
         """
@@ -34,7 +48,10 @@ class Bvatar(object):
         coins are left, Peter suddenly wakes up. What a strange dream!
         """
         # Reset the atrium.
-        atrium_size = 32 if self.mirror else 64
+        wall_length = 2 ** self.size
+        atrium_size = wall_length ** 2
+        if self.mirror:
+            atrium_size //= 2
         self.atrium = [0] * atrium_size
         if not self.mirror:
             self.atrium *= 2
@@ -43,21 +60,28 @@ class Bvatar(object):
         steps.frombytes(self.bytes)
 
         # First bits are the position, the rest are the steps.
-        pos_bits = 5 if self.mirror else 6
-        pos, steps = int(steps[:pos_bits].to01(), 2), steps[pos_bits:]
+        pos_bits = self.size * 2
+        if self.mirror:
+            pos_bits -= 1
+        # pos, steps = int(steps[:pos_bits].to01(), 2), steps[pos_bits:]
+
         if self.king:
             king_tendancy = steps.copy()
             king_tendancy.reverse()
+            king_tendancy = itertools.cycle(king_tendancy)
+        steps = itertools.cycle(steps)
 
         # Mark the starting position.
+        pos = start_pos = self._get_start_pos(steps)
         self.atrium[pos] += 1
+
         do_x, do_y = True, True
-        while True:
+        for i in range(atrium_size * 2):
             try:
-                x, y = steps.pop(), steps.pop()
+                x, y = steps.next(), steps.next()
                 if self.king:
-                    if king_tendancy.pop() and do_x and do_y:
-                        do_y = king_tendancy.pop()
+                    if king_tendancy.next() and do_x and do_y:
+                        do_y = king_tendancy.next()
                         do_x = not do_y
                     else:
                         do_x, do_y = True, True
@@ -66,16 +90,19 @@ class Bvatar(object):
                 break
             if do_x or not do_y:
                 if x:
-                    pos += 8 if pos < atrium_size-8 else 0
+                    pos += wall_length if pos < atrium_size-wall_length else 0
                 else:
-                    pos -= 8 if pos >= 8 else 0
+                    pos -= wall_length if pos >= wall_length else 0
             if do_y or not do_x:
                 if y:
-                    pos += (1 if (pos+1) % 8 else 0)
+                    pos += (1 if (pos+1) % wall_length else 0)
                 else:
-                    pos -= (1 if pos % 8 else 0)
+                    pos -= (1 if pos % wall_length else 0)
             # Leave a coin.
             self.atrium[pos] += 1
+
+            if i == atrium_size - 1:
+                pos = atrium_size - start_pos
 
     def ascii(self, stdout=None, spaced=False, border=True):
         if spaced:
@@ -142,13 +169,14 @@ class Bvatar(object):
             sat = 0
             max_lightness = 1
 
-        img = Image.new('RGB', (8, 8), 'white')
+        wall_length = 2 ** self.size
+        img = Image.new('RGB', (wall_length, wall_length), 'white')
         max_weight = float(max(self.atrium))
         light_weight = max_weight / (max_lightness-min_lightness)
         for point, weight in enumerate(self.atrium):
             if not weight:
                 continue
-            x, y = point // 8, point % 8
+            x, y = point // wall_length, point % wall_length
             hls = (
                 hue,
                 min_lightness + weight/light_weight,
@@ -156,12 +184,15 @@ class Bvatar(object):
             )
             color = tuple(
                 200 - int(200 * p) for p in colorsys.hls_to_rgb(*hls))
-            img.putpixel((x, y), color)
+            try:
+                img.putpixel((x, y), color)
+            except:
+                import pdb; pdb.set_trace()
             if self.mirror:
-                img.putpixel((7-x, y), color)
+                img.putpixel((wall_length-1-x, y), color)
 
         if pxsize > 1:
-            img = img.resize((8*pxsize,)*2)
+            img = img.resize((wall_length*pxsize,)*2)
         return img
 
 
