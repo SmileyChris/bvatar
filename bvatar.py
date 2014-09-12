@@ -77,7 +77,6 @@ class Bvatar(object):
             # Leave a coin.
             self.atrium[pos] += 1
 
-
     def ascii(self, stdout=None, spaced=False, border=True):
         if spaced:
             # Custom single
@@ -120,18 +119,23 @@ class Bvatar(object):
                 stdout.write('-')
             stdout.write('+\n')
 
-    def _get_color_bits(self):
+    def _get_hue_and_sat(self):
         color_bits = bitarray(endian='big')
         color_bits.frombytes(hashlib.sha1(self.bytes).digest())
-        return color_bits
+        hue = int(color_bits[:8].to01(), 2) / 256.0
+        sat = int(color_bits[8:12].to01(), 2) / 16.0 * 0.5 + 0.2
+        return hue, sat
+
+    def color(self, lightness=0.5, hue_offset=0):
+        hue, sat = self._get_hue_and_sat()
+        return colorsys.hls_to_rgb(hue+hue_offset, lightness, sat)
 
     def image(self, color=True, pxsize=1):
         from PIL import Image
 
+        min_lightness = 0.1
         if color:
-            color_bits = self._get_color_bits()
-            hue = int(color_bits[:8].to01(), 2) / 256.0
-            sat = int(color_bits[8:12].to01(), 2) / 16.0 * 0.5 + 0.2
+            hue, sat = self._get_hue_and_sat()
             max_lightness = 0.75
         else:
             hue = 1
@@ -140,11 +144,16 @@ class Bvatar(object):
 
         img = Image.new('RGB', (8, 8), 'white')
         max_weight = float(max(self.atrium))
+        light_weight = max_weight / (max_lightness-min_lightness)
         for point, weight in enumerate(self.atrium):
             if not weight:
                 continue
             x, y = point // 8, point % 8
-            hls = (hue, weight / max_weight * max_lightness, sat)
+            hls = (
+                hue,
+                min_lightness + weight/light_weight,
+                sat,
+            )
             color = tuple(
                 200 - int(200 * p) for p in colorsys.hls_to_rgb(*hls))
             img.putpixel((x, y), color)
