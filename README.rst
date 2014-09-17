@@ -35,6 +35,8 @@ Usage
 
 Import the bvatar class and use it like so:
 
+.. code:: python
+
     from bvatar import Bvatar
     bvtr = Bvatar('text')
     img = bvtr.image()
@@ -58,23 +60,23 @@ only displayed and not stored. To save the image, pipe to a file::
 
 Arguments:
 
-    ``TEXT``
-        bvatar source text (otherwise a random bvatar is generated)
+``TEXT``
+    bvatar source text (otherwise a random bvatar is generated)
 
 Options:
 
-    ``--mirror``
-        generate a horizontally mirrored bvatar
-    ``--no-color``
-        use greyscale rather than coloring the image
-    ``--px-size=<int>``
-        actual size for each pixel [default: 16]
-    ``--hash=<sha1_hash>``
-        rather than passing the text and having it SHA1ed, you can pass a hex
-        encoded SHA1 hash explicitly
-    ``--ascii``
-        output ascii rather than generating a bitmap image
-    ``--spaced``
-        a "lighter" ascii art alternative
-    ``--no-border``
-        don't add a border around the ascii art
+``--mirror``
+    generate a horizontally mirrored bvatar
+``--no-color``
+    use greyscale rather than coloring the image
+``--px-size=<int>``
+    actual size for each pixel [default: 16]
+``--hash=<sha1_hash>``
+    rather than passing the text and having it SHA1ed, you can pass a hex
+    encoded SHA1 hash explicitly
+``--ascii``
+    output ascii rather than generating a bitmap image
+``--spaced``
+    a "lighter" ascii art alternative
+``--no-border``
+    don't add a border around the ascii art
