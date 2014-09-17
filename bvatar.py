@@ -144,20 +144,21 @@ class Bvatar(object):
     def _get_hue_and_sat(self):
         color_bits = bitarray(endian='big')
         color_bits.frombytes(hashlib.sha1(self.bytes).digest())
-        hue = int(color_bits[:8].to01(), 2) / 256.0
-        sat = int(color_bits[8:12].to01(), 2) / 16.0 * 0.5 + 0.2
+        hue = int(color_bits[:8].to01(), 2) / 255.0
+        sat = int(color_bits[8:12].to01(), 2) / 15.0 * .8 + 0.2
         return hue, sat
 
     def color(self, lightness=0.5, hue_offset=0):
         hue, sat = self._get_hue_and_sat()
         return colorsys.hls_to_rgb(hue+hue_offset, lightness, sat)
 
-    def image(self, color=True, pxsize=1):
+    def image(self, color=0.75, pxsize=1, fill=False):
         from PIL import Image
 
         min_lightness = 0.1
         if color:
             hue, sat = self._get_hue_and_sat()
+            sat *= color
             max_lightness = 0.75
         else:
             hue = 1
@@ -165,29 +166,30 @@ class Bvatar(object):
             max_lightness = 1
 
         wall_length = 2 ** self.size
-        img = Image.new('RGB', (wall_length, wall_length), 'white')
+        if fill:
+            bgcolor = tuple(int(255*p) for p in self.color(max_lightness))
+        else:
+            bgcolor = 'white'
+        img = Image.new('RGB', (wall_length, wall_length), bgcolor)
         max_weight = float(max(self.atrium))
-        light_weight = max_weight / (max_lightness-min_lightness)
+        light_weight = max_lightness-min_lightness
         for point, weight in enumerate(self.atrium):
             if not weight:
                 continue
             x, y = point // wall_length, point % wall_length
             hls = (
                 hue,
-                min_lightness + weight/light_weight,
+                min_lightness + (1-weight/max_weight)*light_weight,
                 sat,
             )
-            color = tuple(
-                200 - int(200 * p) for p in colorsys.hls_to_rgb(*hls))
-            try:
-                img.putpixel((x, y), color)
-            except:
-                import pdb; pdb.set_trace()
+            pxcolor = tuple(int(255*p) for p in colorsys.hls_to_rgb(*hls))
+            img.putpixel((x, y), pxcolor)
             if self.mirror:
-                img.putpixel((wall_length-1-x, y), color)
+                img.putpixel((wall_length-1-x, y), pxcolor)
 
         if pxsize > 1:
             img = img.resize((wall_length*pxsize,)*2)
+
         return img
 
 
@@ -237,9 +239,11 @@ def main():
         bvatar.ascii(
             spaced=arguments['--spaced'], border=not arguments['--no-border'])
     else:
+        kwargs = {}
         img = bvatar.image(
             pxsize=int(arguments['--px-size']),
-            color=not arguments['--no-color']
+            color=float(arguments['--saturation']),
+            fill=arguments['--fill']
         )
         if sys.stdout.isatty():
             img.show()

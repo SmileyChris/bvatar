@@ -9,10 +9,11 @@ def main():
     """
     Generate a grid of example bvatars.
 
-    Usage: example.py [--mirror] [--no-king] [--multiplier=<num>] [--bits=<num>]
+    Usage: example.py [--mirror] [--fill] [--no-king] [--multiplier=<num>] [--bits=<num>]
 
     Options:
         --mirror            create mirrored avatars
+        --fill              color-fill the avatars
         --no-king           don't use the new king algorithm
         --multiplier=<num>  Pixel multiplier [default: 8]
         --bits=<num>        Bits per side [default: 3]
@@ -38,7 +39,7 @@ def main():
                 name, king=not arguments['--no-king'],
                 mirror=arguments['--mirror'], bits=bits)
             grid.paste(
-                bvtr.image(pxsize=multiplier),
+                bvtr.image(pxsize=multiplier, fill=arguments['--fill']),
                 (x*offset + border, y*offset + border)
             )
             # ImageFont.load('arial.ttf')
