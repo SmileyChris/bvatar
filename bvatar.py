@@ -196,27 +196,33 @@ def main():
     Generate a Bvatar (an 8x8 randomart avatar).
 
     Usage:
-        bvatar [--mirror] [--no-color] [--px-size=<int>] ([TEXT] | [--hash=<sha1_hash>])
+        bvatar [--mirror] [--saturation=<float>] [--fill] [--px-size=<int>] ([TEXT] | [--hash=<sha1_hash>])
         bvatar --ascii [--mirror] [--spaced] [--no-border] ([TEXT] | [--hash=<sha1_hash>])
 
     Arguments:
         TEXT  bvatar source text (otherwise a random bvatar is generated)
 
     Options:
-        --mirror            generate a horizontally mirrored bvatar
-        --no-color          use greyscale rather than coloring the image
-        --px-size=<int>     actual size for each pixel [default: 16]
-        --hash=<sha1_hash>  rather than passing the text and having it SHA1ed,
-                            you can pass a hex encoded SHA1 hash explicitly
-        --ascii             output ascii rather than generating a bitmap image
-        --spaced            a "lighter" ascii art alternative
-        --no-border         don't add a border around the ascii art
+        --mirror              generate a horizontally mirrored bvatar
+        --saturation=<float>  color saturation (use 0 for greyscale image)
+                              [default: 0.75]
+        --fill                fill background with lightest saturation of the
+                              bvatar's color
+        --px-size=<int>       actual size for each pixel [default: 16]
+        --hash=<sha1_hash>    rather than passing the text and having it
+                              SHA1ed, you can pass a hex encoded SHA1 hash
+                              explicitly
+        --ascii               output ascii rather than generating a bitmap
+                              image
+        --spaced              a "lighter" ascii art alternative
+        --no-border           don't add a border around the ascii art
     """
     from docopt import docopt
     arguments = docopt(main.__doc__)
 
-    source = arguments['TEXT'] or arguments['--hash'] or uuid.uuid4().bytes
-    bvatar = Bvatar(source, mirror=arguments['--mirror'])
+    is_hash = arguments['--hash']
+    source = arguments['TEXT'] or is_hash or uuid.uuid4().bytes
+    bvatar = Bvatar(source, mirror=arguments['--mirror'], is_hash=is_hash)
 
     use_ascii = arguments['--ascii']
     if not use_ascii and sys.stdout.isatty():
