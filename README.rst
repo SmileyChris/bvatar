@@ -11,13 +11,13 @@ Setup
 Install from PYPI
 -----------------
 
-Install with the following pip command::
-
-    pip install bvatar
-
-Or if you want to be able to create bitmap images, use this instead::
+For a full install (to be able to create bitmap images), use the following pip
+command::
 
     pip install bvatar[bitmap]
+
+Or, if for some reason you only want to output ascii bvatars, just use:
+``pip install bvatar``
 
 
 Install development version
@@ -67,15 +67,23 @@ Options:
 
 ``--mirror``
     generate a horizontally mirrored bvatar
-``--no-color``
-    use greyscale rather than coloring the image
-``--px-size=<int>``
-    actual size for each pixel [default: 16]
+``--ascii``
+    output ascii rather than generating a bitmap image
 ``--hash=<sha1_hash>``
     rather than passing the text and having it SHA1ed, you can pass a hex
     encoded SHA1 hash explicitly
-``--ascii``
-    output ascii rather than generating a bitmap image
+
+Extra options when generating an image (i.e. not using``--ascii``):
+
+``--saturation``
+    color saturation (use 0 for greyscale image) [default: 0.75]
+``--fill``
+    fill background with lightest saturation of the bvatar's color
+``--px-size=<int>``
+    actual size for each pixel [default: 16]
+
+Extra options when using ``--ascii``:
+
 ``--spaced``
     a "lighter" ascii art alternative
 ``--no-border``
