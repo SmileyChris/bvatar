@@ -15,7 +15,7 @@ def main():
         --mirror            create mirrored avatars
         --no-king           don't use the new king algorithm
         --multiplier=<num>  Pixel multiplier [default: 8]
-        --bits=<num>        Bis per side [default: 3] (experimental)
+        --bits=<num>        Bits per side [default: 3]
     """
     from docopt import docopt
     arguments = docopt(main.__doc__)
