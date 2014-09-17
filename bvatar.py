@@ -59,12 +59,6 @@ class Bvatar(object):
         steps = bitarray(endian='big')
         steps.frombytes(self.bytes)
 
-        # First bits are the position, the rest are the steps.
-        pos_bits = self.size * 2
-        if self.mirror:
-            pos_bits -= 1
-        # pos, steps = int(steps[:pos_bits].to01(), 2), steps[pos_bits:]
-
         if self.king:
             king_tendancy = steps.copy()
             king_tendancy.reverse()
@@ -102,7 +96,8 @@ class Bvatar(object):
             self.atrium[pos] += 1
 
             if i == atrium_size - 1:
-                pos = atrium_size - start_pos
+                # Pick a new starting position.
+                pos = self._get_start_pos(steps)
 
     def ascii(self, stdout=None, spaced=False, border=True):
         if spaced:
