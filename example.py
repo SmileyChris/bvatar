@@ -9,7 +9,7 @@ def main():
     """
     Generate a grid of example bvatars.
 
-    Usage: example.py [--mirror] [--fill] [--no-king] [--multiplier=<num>] [--bits=<num>]
+    Usage: example.py [--mirror] [--fill] [--multiplier=<num>] [--bits=<num>]
 
     Options:
         --mirror            create mirrored avatars
@@ -36,8 +36,7 @@ def main():
         for y, number in enumerate(numbers):
             name = letter+number
             bvtr = Bvatar(
-                name, king=not arguments['--no-king'],
-                mirror=arguments['--mirror'], bits=bits)
+                name, mirror=arguments['--mirror'], bits=bits)
             grid.paste(
                 bvtr.image(pxsize=multiplier, fill=arguments['--fill']),
                 (x*offset + border, y*offset + border)

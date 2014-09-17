@@ -10,13 +10,12 @@ from bitarray import bitarray
 
 class Bvatar(object):
 
-    def __init__(self, source, mirror=False, is_hash=False, king=True, bits=3):
+    def __init__(self, source, mirror=False, is_hash=False, bits=3):
         if is_hash:
             self.bytes = base64.b16decode(source)
         else:
             self.bytes = hashlib.sha1(source).digest()
         self.mirror = mirror
-        self.king = king
         #: Number of bits per side (default is 3, so an 8x8 bvatar)
         self.size = bits
         self.walk()
@@ -40,12 +39,11 @@ class Bvatar(object):
         are walls on all four sides and apparently there is no exit. The floor
         is paved with square tiles, strictly alternating between black and
         white. His head heavily aching probably from too much wine he had
-        before he starts wandering around randomly, Well, to be exact, he only
-        makes diagonal steps just like a bishop on a chess board. When he hits
-        a wall, he moves to the side, which takes him from the black tiles to
-        the white tiles (or vice versa). And after each move, he places a coin
-        on the floor, to remember that he has been there before. Just when no
-        coins are left, Peter suddenly wakes up. What a strange dream!
+        before he starts wandering around randomly, Well, to be exact, he
+        usually makes diagonal steps just like a bishop on a chess board. When
+        he hits a wall, he moves to the side. And after each move, he places a
+        coin on the floor, to remember that he has been there before. Just
+        when no coins are left, Peter suddenly wakes up. What a strange dream!
         """
         # Reset the atrium.
         wall_length = 2 ** self.size
@@ -59,10 +57,9 @@ class Bvatar(object):
         steps = bitarray(endian='big')
         steps.frombytes(self.bytes)
 
-        if self.king:
-            king_tendancy = steps.copy()
-            king_tendancy.reverse()
-            king_tendancy = itertools.cycle(king_tendancy)
+        king_tendancy = steps.copy()
+        king_tendancy.reverse()
+        king_tendancy = itertools.cycle(king_tendancy)
         steps = itertools.cycle(steps)
 
         # Mark the starting position.
@@ -71,17 +68,14 @@ class Bvatar(object):
 
         do_x, do_y = True, True
         for i in range(atrium_size * 2):
-            try:
-                x, y = steps.next(), steps.next()
-                if self.king:
-                    if king_tendancy.next() and do_x and do_y:
-                        do_y = king_tendancy.next()
-                        do_x = not do_y
-                    else:
-                        do_x, do_y = True, True
-            except IndexError:
-            # No more steps to consume.
-                break
+            x, y = steps.next(), steps.next()
+            # As long as the Bishop didn't already walk like a king last step,
+            # there's a 50% chance he will now.
+            if do_x and do_y and king_tendancy.next():
+                do_y = king_tendancy.next()
+                do_x = not do_y
+            else:
+                do_x, do_y = True, True
             if do_x or not do_y:
                 if x:
                     pos += wall_length if pos < atrium_size-wall_length else 0
