@@ -78,7 +78,7 @@ Extra options when generating an image (i.e. not using``--ascii``):
 ``--saturation``
     color saturation (use 0 for greyscale image) [default: 0.75]
 ``--fill``
-    fill background with lightest saturation of the bvatar's color
+    fill background with lightest tone of the bvatar's color
 ``--px-size=<int>``
     actual size for each pixel [default: 16]
 

@@ -202,7 +202,7 @@ def main():
         --mirror              generate a horizontally mirrored bvatar
         --saturation=<float>  color saturation (use 0 for greyscale image)
                               [default: 0.75]
-        --fill                fill background with lightest saturation of the
+        --fill                fill background with lightest tone of the
                               bvatar's color
         --px-size=<int>       actual size for each pixel [default: 16]
         --hash=<sha1_hash>    rather than passing the text and having it
